@@ -182,5 +182,42 @@ A passive phrase id determined by the sequence of regexps from
          list-matching-lines-default-context-lines
          `((,start . ,end))))
 
+
+;;;
+;;; Duplicate word checker
+;;;
+
+;;;###autoload
+(defun write-checker-duplicates (start end)
+  "Find duplicate adjacent words in the region between START and END.
+
+If no region is active, the whole buffer is checked."
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list (point-min) (point-max))))
+  (save-excursion
+    (goto-char start)
+    (let ((last-word ""))
+      (while (re-search-forward "\\b\\w+\\b" end t)
+        ;; The point is now at the end of the found word which means the loop
+        ;; automatically moves forward on the next iteration.
+        (let* ((word-start (match-beginning 0))
+               (word-end (match-end 0))
+               (word-text (buffer-substring word-start word-end)))
+          (cond
+           ;; FIXME: Finding a punctuation character should reset the last word.
+           ;; Using a duplicate word across punctuation is fine.
+           ;; ((regexp-match word-text "^\\W+$")
+           ;;  (setq last-word ""))
+           ;; FIXME: We should skip whitespace.
+           ;; ((regexp-match word-text "^\\s*$") 'nil)
+           ((string-equal-ignore-case word-text last-word)
+            (message (format "%s:%s Duplicate: %s"
+                             (buffer-name)
+                             (line-number-at-pos)
+                             word-text)))
+           (t (setq last-word word-text))))))
+    (message "Finished looking for duplicates!")))
+
 (provide 'write-checker)
 ;;; write-checker.el ends here
