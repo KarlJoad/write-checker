@@ -41,6 +41,19 @@
 ;; developed in and for English. Your mileage may vary with other languages.
 
 ;;; Code:
+(eval-when-compile (require 'rx))
+
+(defgroup write-checker nil
+  "Various academic writing supports."
+  :tag "write-checker"
+  :group 'languages
+  :prefix "write-checker-"
+  :version "29.1"
+  :link '(custom-manual "(write-checker) Top")
+  :link '(info-link "(write-checker) Customization")
+  :link '(url-link "https://github.com/KarlJoad/write-checker")
+  :link '(emacs-commentary-link :tag "Commentary" "write-checker.el")
+  :link '(emacs-library-link :tag "Lisp File" "write-checker.el"))
 
 (provide 'write-checker)
 ;;; write-checker.el ends here
