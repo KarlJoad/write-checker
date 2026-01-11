@@ -1,0 +1,26 @@
+#+TITLE: write-checker
+
+This is a collection of functions and minor-modes to make academic writing easier.
+I put this together for myself, but if this is useful for you, please use it!
+
+This is a combination of several previous works:
+  * https://matt.might.net/articles/shell-scripts-for-passive-voice-weasel-words-duplicates/
+  * [[https://github.com/bnbeckwith/writegood-mode][writegood-mode]]
+  * [[https://github.com/sachac/artbollocks-mode][artbollocks-mode]]
+
+* Installation
+** straight.el
+I personally don't use straight.el, so I cannot assure you the recipe below is 100% correct, but it should serve as a start.
+#+begin_src elisp
+(use-package write-checker
+  :ensure t
+  :straight (write-checker :type git :host github :repo "Karljoad/write-checker"))
+#+end_src
+
+** elpaca
+#+begin_src elisp
+(use-package write-checker
+  :ensure (:host github :repo "KarlJoad/write-checker"
+           :branch "master"
+           :depth nil))
+#+end_src
