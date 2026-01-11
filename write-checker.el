@@ -9,8 +9,9 @@
 ;; Keywords: Writing
 
 ;; Package-Version: 0.0.1-git
-;; Package-Requires: ((emacs "29.4"))
+;; Package-Requires: ((emacs "18.0"))
 ;; TODO: Determine minimum Emacs version
+;; occur Probably introduced at or before Emacs version 18.
 
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -54,6 +55,41 @@
   :link '(url-link "https://github.com/KarlJoad/write-checker")
   :link '(emacs-commentary-link :tag "Commentary" "write-checker.el")
   :link '(emacs-library-link :tag "Lisp File" "write-checker.el"))
+
+
+;;;
+;;; Weasel words
+;;;
+
+(defcustom write-checker-weasel-regexps
+  '("many" "various" "very" "fairly" "several" "extremely"
+    "exceedingly" "quite" "remarkably" "few" "surprisingly"
+    "mostly" "largely" "huge" "tiny" "((are\\|is) a number)"
+    "excellent" "interestingly" "significantly"
+    "substantially" "clearly" "vast" "relatively" "completely")
+  "List of regexps that write-checker should consider \"weasel words\"."
+  :group 'write-checker
+  :type '(repeat regexp))
+
+;; TODO: Add ability to exclude words and/or lines from the search.
+;; Particularly, we want to ignore comment lines
+
+;;;###autoload
+(defun write-checker-weasel (start end)
+  "Check for \"weasel words\" in the region between START and END.
+
+If no region is active, the whole buffer is checked.
+
+The set of weasel words is defined by `write-checker-weasel-regexps'."
+  (interactive (if (use-region-p)
+                   (list (region-beginning) (region-end))
+                 (list (point-min) (point-max))))
+  ;; FIXME: occur's regexp string matching only does character matching!
+  ;; We want to do whole-word matching, i.e. we want the regexp "is" to match
+  ;; the whole word "is" and NOT the 'i s' in "this".
+  (occur (string-join write-checker-weasel-regexps "\\|")
+         list-matching-lines-default-context-lines
+         `((,start . ,end))))
 
 (provide 'write-checker)
 ;;; write-checker.el ends here
