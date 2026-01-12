@@ -8,6 +8,12 @@ This is a combination of several previous works:
   * [[https://github.com/bnbeckwith/writegood-mode][writegood-mode]]
   * [[https://github.com/sachac/artbollocks-mode][artbollocks-mode]]
 
+* Requirements
+  * Emacs 27.2?
+    I am not sure 100% sure what the minimum Emacs version is.
+    I almost always run the most recent Emacs release for better tree-sitter & LSP support.
+    This package only uses built-in Emacs functions and fairly old ones at that, so this package will likely work on far older Emacsen than I have time to test.
+
 * Installation
 ** straight.el
 I personally don't use straight.el, so I cannot assure you the recipe below is 100% correct, but it should serve as a start.
