@@ -74,6 +74,37 @@
 ;; TODO: Add ability to exclude words and/or lines from the search.
 ;; Particularly, we want to ignore comment lines
 
+(defcustom write-checker--weasel-tooltip
+  "Weasel word: consider removing or replacing"
+  "Message to show for weasel words."
+  :group 'write-checker
+  :type 'string)
+
+(defface write-checker--weasel-face
+  '((((supports :underline (:style wave)))
+     :underline (:style wave :color "DarkOrange"))
+    (((class color) (background light))
+     (:inherit font-lock-warning-face :background "moccasin"))
+    (((class color) (background dark))
+     (:inherit font-lock-warning-face :background "DarkOrange")))
+  "Default font face weasel words found by write-checker."
+  :group 'write-checker)
+
+(defun write-checker--weasel-font-lock-keywords-regexp ()
+  "Generate regexp that matches the defined weasel words.
+
+See `weasel-checker-weasel-regexps' for which regexps will be font-locked."
+  (concat "\\b\\(?:"
+          (regexp-opt write-checker-weasel-regexps)
+          "\\)\\b"))
+
+(defun write-checker--weasel-font-lock-keywords ()
+  "Font-lock rules for weasel words."
+  `((,(write-checker--weasel-font-lock-keywords-regexp)
+     0
+     '(face write-checker--weasel-face help-echo ,write-checker--weasel-tooltip)
+     prepend)))
+
 ;;;###autoload
 (defun write-checker-weasel (start end)
   "Check for \"weasel words\" in the region between START and END.
@@ -229,11 +260,13 @@ If no region is active, the whole buffer is checked."
 
 (defun write-checker--mode-enable ()
   "Enable the minor mode's things."
-  't)
+  (font-lock-add-keywords
+   'nil
+   (write-checker--weasel-font-lock-keywords) 't))
 
 (defun write-checker--mode-disable ()
   "Disable the minor mode's things."
-  't)
+  (font-lock-remove-keywords 'nil (write-checker--weasel-font-lock-keywords)))
 
 ;;;###autoload
 (define-minor-mode write-checker-mode
