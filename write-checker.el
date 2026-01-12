@@ -118,6 +118,10 @@ The set of weasel words is defined by `write-checker-weasel-regexps'."
   ;; FIXME: occur's regexp string matching only does character matching!
   ;; We want to do whole-word matching, i.e. we want the regexp "is" to match
   ;; the whole word "is" and NOT the 'i s' in "this".
+  ;; TODO: Perhaps this should use #'compilation-start?
+  ;; (compilation-start (string-join commands " ") #'grep-mode)
+  ;; TODO: Perhaps we just use the normal searching mechanisms?
+  ;; `#'search-forward-regexp'?
   (occur (string-join write-checker-weasel-regexps "\\|")
          list-matching-lines-default-context-lines
          `((,start . ,end))))
@@ -205,6 +209,10 @@ A passive phrase id determined by the sequence of regexps from
   ;; FIXME: occur's regexp string matching only does character matching!
   ;; We want to do whole-word matching, i.e. we want the regexp "is" to match
   ;; the whole word "is" and NOT the 'i s' in "this".
+  ;; TODO: Perhaps this should use #'compilation-start?
+  ;; (compilation-start (string-join commands " ") #'grep-mode)
+  ;; TODO: Perhaps we just use the normal searching mechanisms?
+  ;; `#'search-forward-regexp'?
   (occur (concat "\\b\\(?:"
                  (string-join write-checker-passive-verb-regexps "\\|")
                  "\\)\\([[:space:]]\\|\\s<\\|\\s>\\)+\\(?:"
@@ -276,6 +284,7 @@ If no region is active, the whole buffer is checked."
            ;; FIXME: We should skip whitespace.
            ;; ((regexp-match word-text "^\\s*$") 'nil)
            ((string-equal-ignore-case word-text last-word)
+            ;; TODO: Actually do something useful with the found duplicate!
             (message (format "%s:%s Duplicate: %s"
                              (buffer-name)
                              (line-number-at-pos)
