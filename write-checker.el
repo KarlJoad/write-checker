@@ -219,5 +219,39 @@ If no region is active, the whole buffer is checked."
            (t (setq last-word word-text))))))
     (message "Finished looking for duplicates!")))
 
+
+;;;
+;;; Minor-mode
+;;;
+;;; This minor-mode does font-locking for the matches that will be returned by
+;;; the functions above.
+;;;
+
+(defun write-checker--mode-enable ()
+  "Enable the minor mode's things."
+  't)
+
+(defun write-checker--mode-disable ()
+  "Disable the minor mode's things."
+  't)
+
+;;;###autoload
+(define-minor-mode write-checker-mode
+  "Font-lock (colorize) issues with writing in the buffer."
+  :init-value 'nil
+  :lighter " write-checker"
+  :require 'write-checker
+  :group 'write-checker
+  (if write-checker-mode
+      (write-checker--mode-enable)
+    (write-checker--mode-disable))
+  (font-lock-mode 1))
+
+;;;###autoload
+(define-globalized-minor-mode write-checker-global-mode
+  write-checker-mode
+  write-checker-mode
+  :group 'write-checker)
+
 (provide 'write-checker)
 ;;; write-checker.el ends here
