@@ -283,6 +283,39 @@ If no region is active, the whole buffer is checked."
            (t (setq last-word word-text))))))
     (message "Finished looking for duplicates!")))
 
+(defcustom write-checker--duplicates-tooltip
+  "Duplicates detected"
+  "Message to show for duplicated words."
+  :group 'write-checker
+  :type 'string)
+
+(defface write-checker--duplicate-face
+  '((((supports :underline (:style wave)))
+     :underline (:style wave :color "Red"))
+    (((class color) (background light))
+     (:inherit font-lock-warning-face :background "moccasin"))
+    (((class color) (background dark))
+     (:inherit font-lock-warning-face :background "DarkOrange")))
+  "Default font face duplicate words found by write-checker."
+  :group 'write-checker)
+
+(defvar write-checker--duplicate-regexp
+  "\\b\\([[:word:]]+\\)\\([[:space:]]\\|\\s<\\|\\s>\\)+\\1\\b"
+  "Regular expression for detecting duplicate words.")
+
+(defun write-checker--duplicate-font-lock-keywords-matcher (limit)
+  "Case-insensitive regexp duplicate matching for font-locking until LIMIT."
+  (let ((case-fold-search 't))
+    (re-search-forward write-checker--duplicate-regexp limit t)))
+
+(defun write-checker--duplicate-font-lock-keywords ()
+  "Font-lock rules for duplicate words."
+  `((write-checker--duplicate-font-lock-keywords-matcher
+     0
+     '(face write-checker--duplicate-face
+       help-echo write-checker--duplicate-tooltip)
+     prepend)))
+
 
 ;;;
 ;;; Minor-mode
@@ -298,12 +331,16 @@ If no region is active, the whole buffer is checked."
    (write-checker--weasel-font-lock-keywords) 't)
   (font-lock-add-keywords
    'nil
-   (write-checker--passive-font-lock-keywords) 't))
+   (write-checker--passive-font-lock-keywords) 't)
+  (font-lock-add-keywords
+   'nil
+   (write-checker--duplicate-font-lock-keywords) 't))
 
 (defun write-checker--mode-disable ()
   "Disable the minor mode's things."
   (font-lock-remove-keywords 'nil (write-checker--weasel-font-lock-keywords))
-  (font-lock-remove-keywords 'nil (write-checker--passive-font-lock-keywords)))
+  (font-lock-remove-keywords 'nil (write-checker--passive-font-lock-keywords))
+  (font-lock-remove-keywords 'nil (write-checker--duplicate-font-lock-keywords)))
 
 ;;;###autoload
 (define-minor-mode write-checker-mode
