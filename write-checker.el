@@ -213,6 +213,39 @@ A passive phrase id determined by the sequence of regexps from
          list-matching-lines-default-context-lines
          `((,start . ,end))))
 
+(defcustom write-checker--passive-tooltip
+  "Passive word: consider removing or replacing"
+  "Message to show for passive words."
+  :group 'write-checker
+  :type 'string)
+
+(defface write-checker--passive-face
+  '((((supports :underline (:style wave)))
+     :underline (:style wave :color "Blue"))
+    (((class color) (background light))
+     (:inherit font-lock-warning-face :background "moccasin"))
+    (((class color) (background dark))
+     (:inherit font-lock-warning-face :background "DarkOrange")))
+  "Default font face passive words found by write-checker."
+  :group 'write-checker)
+
+(defun write-checker--passive-font-lock-keywords-regexp ()
+  "Generate regexp that matches the defined passive words.
+
+See `passive-checker-passive-regexps' for which regexps will be font-locked."
+  (concat "\\b\\(?:"
+          (regexp-opt write-checker-passive-verb-regexps)
+          "\\([[:space:]]\\|\\s<\\|\\s>\\)+"
+          (regexp-opt write-checker-passive-adverb-regexps)
+          "\\)\\b"))
+
+(defun write-checker--passive-font-lock-keywords ()
+  "Font-lock rules for passive words."
+  `((,(write-checker--passive-font-lock-keywords-regexp)
+     0
+     '(face write-checker--passive-face help-echo ,write-checker--passive-tooltip)
+     prepend)))
+
 
 ;;;
 ;;; Duplicate word checker
@@ -262,11 +295,15 @@ If no region is active, the whole buffer is checked."
   "Enable the minor mode's things."
   (font-lock-add-keywords
    'nil
-   (write-checker--weasel-font-lock-keywords) 't))
+   (write-checker--weasel-font-lock-keywords) 't)
+  (font-lock-add-keywords
+   'nil
+   (write-checker--passive-font-lock-keywords) 't))
 
 (defun write-checker--mode-disable ()
   "Disable the minor mode's things."
-  (font-lock-remove-keywords 'nil (write-checker--weasel-font-lock-keywords)))
+  (font-lock-remove-keywords 'nil (write-checker--weasel-font-lock-keywords))
+  (font-lock-remove-keywords 'nil (write-checker--passive-font-lock-keywords)))
 
 ;;;###autoload
 (define-minor-mode write-checker-mode
